@@ -1,0 +1,12 @@
+{
+  "name": "DocScan",
+  "displayName": "DocScan",
+  "expo": {
+    "name": "DocScan",
+    "slug": "DocScan",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
