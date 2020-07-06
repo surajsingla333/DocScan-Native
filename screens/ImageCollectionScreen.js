@@ -1,95 +1,141 @@
 import React from 'react';
 import { View, ScrollView, Text, StyleSheet, FlatList, Image, Button } from 'react-native';
 
-// import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
+import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
 
-import { useSelector } from 'react-redux';
+import Directory from '../constants/Directory';
 
+import { useSelector, useDispatch } from 'react-redux';
+
+import * as imagesActions from '../store/image/action';
+import Colors from '../constants/Colors';
+
+import ImagePage from '../components/ImagePage';
 
 const ImageCollectionScreen = props => {
 
   const images = useSelector(state => state.images.images);
 
+  const dispatch = useDispatch();
+
   console.log("IMAGE", images);
   try {
     console.log("IMAGE 0", images[0], "IMAGE 0 end");
-    console.log("IMAGE 0 uri", images[0].uri);
+    console.log("IMAGE 0 uri", images[0].uri.uri);
   }
   catch (err) {
     console.log(err);
   }
 
-  const createPdf = () => { console.log("PRESSING BUTTON") }
-  //   // Import from 'react-native-pdf-lib'
-  //   // Create a PDF page with text and rectangles
-  //   const page1 = PDFPage.create().setMediaBox(200, 200).drawText('You can add text and rectangles to the PDF!', {
-  //     x: 5,
-  //     y: 235,
-  //     color: '#007386',
-  //   }).drawRectangle({
-  //     x: 25,
-  //     y: 25,
-  //     width: 150,
-  //     height: 150,
-  //     color: '#FF99CC',
-  //   }).drawRectangle({
-  //     x: 75,
-  //     y: 75,
-  //     width: 50,
-  //     height: 50,
-  //     color: '#99FFCC',
-  //   });
+  const createPdf = async () => {
 
-  //   // Create a PDF page with text and images
-  //   //     const jpgPath = // Path to a JPG image on the file system...
-  //   const pngPath = images[0].uri;
-  //   const page2 = PDFPage.create().setMediaBox(250, 250).drawText('You can add PNG images too!').drawImage(pngPath, 'png', {
-  //     x: 5,
-  //     y: 25,
-  //     width: 200,
-  //     height: 100,
-  //   });
+    let len = images.length;
 
-  //   console.log("INSIDE FUNCTION");
-  //   try {
-  //     // Create a new PDF in your app's private Documents directory
-  //     // setTimeout(async () => {
-  //     // const docsDir = PDFLib.getDocumentsDirectory();
-  //     const pdfPath = `sample.pdf`;
-  //     PDFDocument.create(pdfPath).addPages(page1, page2).write().then(path => {
-  //       console.log('PDF created at: ' + path);
-  //       // Do stuff with your shiny new PDF!
-  //     });
-  //     // }, 100);
-  //   }
-  //   catch (err) {
-  //     console.log("ERR", err);
-  //   }
+    let currentName = new Date().toString();
 
-  // }
+    // const newPath = RNFS.ExternalStorageDirectoryPath;
+    const pdfPath = `${Directory.folderDocument}/${currentName}.pdf`;
+
+    const jpgPath = images[0].uri.path;
+    const page = PDFPage.create().drawImage(jpgPath, 'jpg', {
+      x: 5,
+      y: 25,
+      width: images[0].uri.width / 10,
+      height: images[0].uri.height / 10,
+    });
+
+    let createdPDF = await PDFDocument.create(pdfPath).addPages(page).write();
+
+    console.log('PDF created at: ' + createdPDF);
+
+
+    //   console.log("INSIDE FUNCTION");
+    //   try {
+    //     // Create a new PDF in your app's private Documents directory
+    //     // setTimeout(async () => {
+    //     // const docsDir = PDFLib.getDocumentsDirectory();
+    //     // const pdfPath = `sample.pdf`;
+    //     PDFDocument.create(pdfPath).addPages(page).write().then(path => {
+    //   console.log('PDF created at: ' + path);
+    //   // Do stuff with your shiny new PDF!
+    //   });
+    //     // }, 100);
+    //   }
+    //   catch (err) {
+    // console.log("ERR", err, "ERR END");
+    // }
+
+    if (len == 1) {
+      dispatch(imagesActions.emptyImage(images));
+      props.navigation.navigate("Home");
+      return;
+    }
+
+    else {
+
+      for (let i = 1; i < len; i++) {
+
+        const jpgPath = images[i].uri.path;
+        const page = PDFPage.create().drawImage(jpgPath, 'jpg', {
+          x: 5,
+          y: 25,
+          width: images[i].uri.width / 10,
+          height: images[i].uri.height / 10,
+        });
+
+        console.log("INSIDE ADDING FUNCTIONS");
+        try {
+          // Create a new PDF in your app's private Documents directory
+          // setTimeout(async () => {
+          // const docsDir = PDFLib.getDocumentsDirectory();
+          // const pdfPath = `sample.pdf`;
+          PDFDocument.modify(pdfPath).addPages(page).write().then(path => {
+            console.log(`Page number ${i + 1} added in PDF at: ` + path);
+            // Do stuff with your shiny new PDF!
+          });
+          // }, 100);
+        }
+        catch (err) {
+          console.log("ERR", err, "ERR END");
+          return;
+        }
+      }
+      dispatch(imagesActions.emptyImage());
+      props.navigation.navigate("Home");
+      return;
+    }
+
+  }
+
+  const renderImage = itemData => {
+    return <ImagePage fileName={itemData.item} image={itemData.item.uri} onEditImage={() => { console.log("Clicked Image") }} />
+  }
 
   return (
-    <View>
-      {/* <Text>Pages</Text> */}
-      <FlatList
-        data={images}
-        keyExtractor={item => item.id}
-        renderItem={itemData => (
-          <Image style={{ margin: 5, width: 100, height: 100, }} source={{ uri: itemData.item.uri }} />
-        )}
-      />
-      <Button title="Generate PDF" onPress={createPdf} />
+    <View style={styles.screen}>
+      <View style={styles.pages}>
+        <FlatList data={images} keyExtractor={item => item.id} numColumns={2} renderItem={renderImage} />
+      </View>
+      <View style={styles.buttonView}>
+        <Button color={Colors.primary} title="Generate PDF" onPress={createPdf} />
+        <Button color={Colors.primary} title="Add Image" onPress={() => {props.navigation.pop()}} />
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  item: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: "center",
-    width: 200,
-    height: 300,
+  },
+  pages: {
+    flex: 1,
+  },
+  buttonView: {
+    flexDirection: 'row',
+    margin: 20,
+    borderColor: Colors.accent,
+    justifyContent: 'space-evenly'
   }
 })
 

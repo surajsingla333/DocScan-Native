@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import ImageSelector from '../components/ImageSelector';
 
 import * as imagesActions from '../store/image/action';
+import Colors from '../constants/Colors';
 
 const CameraScreen = props => {
 
@@ -25,22 +26,30 @@ const CameraScreen = props => {
 
   return (
 
-    <ScrollView>
-      <View style={styles.screen}>
+
+    <View style={styles.screen}>
+      <View style={styles.imageSelectorView}>
         <ImageSelector onImageTaken={imageTakenHandler} />
-        <Text>Camera Roll</Text>
       </View>
-      <Button title="Save Image" onPress={saveImage} />
-      {/* <Image style={{ margin: 5, width: 200, height: 200, }} source={{ uri: selectedImage }} /> */}
-    </ScrollView>
+      <View style={styles.cameraButtonView}>
+        <Button color={Colors.primary} title="Save Image" onPress={saveImage} />
+      </View>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  imageSelectorView: {
+    flex: 1,
     justifyContent: 'center',
-    alignItems: "center",
+    alignItems: 'center',
+  },
+  cameraButtonView: {
+    margin: 20,
+    borderColor: Colors.accent
   }
 })
 

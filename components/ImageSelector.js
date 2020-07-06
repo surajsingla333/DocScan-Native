@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, Image, Button, StyleSheet, Alert } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, Image, Button, StyleSheet, Alert, Dimensions } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 // import * as ImagePicker from 'expo-image-picker';
 // import * as Permissions from 'expo-permissions';
 
+
+import { RNCamera } from 'react-native-camera';
 import Colors from '../constants/Colors';
 
 const ImageSelector = props => {
@@ -11,6 +13,7 @@ const ImageSelector = props => {
   console.log("IN IMAGE SELECTOR");
 
   const [pickedImage, setPickedImage] = useState();
+  const camera = useRef();
 
   const takeImageHandler = () => {
 
@@ -27,80 +30,76 @@ const ImageSelector = props => {
         // console.log("RESP", response);
         const source = { uri: response.uri };
 
-        console.log("TYPE OF RESP", typeof(response));
+        console.log("TYPE OF RESP", typeof (response));
 
         setPickedImage(response);
         props.onImageTaken(response);
 
       }
     });
+  };
+
+  const takePicture = (e) => {
+    console.log("EVENT ", e);
+    // camera.capture({metadata: options}).then((data) => {
+    //   console.log("DATA", data);
+    // }).catch(err => {
+    //   console.log("ERR", err);
+    // })
   }
-
-  const getType = () => {
-    console.log(typeof(pickedImage));
-    console.log(Object.keys(pickedImage));
-  }
-  // const verifyPermissions = async () => {
-  //   const result = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
-  //   if (result.status !== 'granted') {
-  //     Alert.alert(
-  //       'Insufficient permissions!',
-  //       'You need to grant camera permissions to use this app.',
-  //       [{ text: 'Okay' }]
-  //     );
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
-  // const takeImageHandler = async () => {
-  //   const hasPermission = await verifyPermissions();
-  //   if (!hasPermission) {
-  //     return;
-  //   }
-  //   const image = await ImagePicker.launchCameraAsync({
-  //     allowsEditing: true,
-  //     quality: 0.5
-  //   });
-
-  //   setPickedImage(image);
-  //   props.onImageTaken(image.uri);
-
-  // };
 
   return (
     <View style={styles.imagePicker}>
-      <View style={styles.imagePreview}>
-        {console.log("STATe", pickedImage)}
-        {/* <Text>NO IMAGE</Text> */}
+      <RNCamera
+        ref={camera}
+        // style={styles.preview}
+        type={RNCamera.Constants.Type.back}
+        flashMode={RNCamera.Constants.FlashMode.on}
+        androidCameraPermissionOptions={{
+          title: 'Permission to use camera',
+          message: 'We need your permission to use your camera',
+          buttonPositive: 'Ok',
+          buttonNegative: 'Cancel',
+        }}
+        captureAudio={false}
+        // androidRecordAudioPermissionOptions={{
+        //   title: 'Permission to use audio recording',
+        //   message: 'We need your permission to use your audio',
+        //   buttonPositive: 'Ok',
+        //   buttonNegative: 'Cancel',
+        // }}
+        onGoogleVisionBarcodesDetected={({ barcodes }) => {
+          console.log(barcodes);
+        }}
+      />
+      <Button title="CAMERA TAKE" onPress={takePicture} />
+      {/* </CameraKitCamera> */}
+      {/* <View style={styles.imagePreview}>
         {!pickedImage ? (<Text>No image picked yet.</Text>) :
           (<Image style={{ width: (pickedImage.width) / 10, height: (pickedImage.height) / 10 }} source={{ uri: pickedImage.uri, width: (pickedImage.width) / 10, height: (pickedImage.height) / 10 }} />)}
 
       </View>
-      <Button title="Take Image" color={Colors.primary} onPress={takeImageHandler} />
-      <Button title="GET TYPE" color={Colors.primary} onPress={getType} />
+      <View style={styles.buttonView}>
+        <Button title="Take Image" color={Colors.primary} onPress={takeImageHandler} />
+      </View> */}
+
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   imagePicker: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15
+    margin: 20
   },
   imagePreview: {
-    width: "100%",
-    height: 200,
-    marginBottom: 10,
+    flex: 1,
+    height: Dimensions.get('window').height / 3,
     justifyContent: 'center',
     alignItems: "center",
-    borderColor: '#ccc',
-    borderWidth: 1
   },
-  // image: {
-  //   width: '100%',
-  //   height: '100%'
-  // }
 
 })
 

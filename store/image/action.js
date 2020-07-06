@@ -1,5 +1,7 @@
 // import * as FileSystem from 'expo-file-system';
+import Directory from '../../constants/Directory';
 import * as RNFS from 'react-native-fs';
+import RNFetchBlob from 'rn-fetch-blob'
 
 // // create a path you want to write to
 // // :warning: on iOS, you cannot write into `RNFS.MainBundlePath`,
@@ -16,23 +18,41 @@ import * as RNFS from 'react-native-fs';
 //   });
 
 export const ADD_IMAGE = "ADD_IMAGE";
+export const EMPTY_IMAGE = "EMPTY_IMAGE";
 
 export const addImage = (image) => {
 
   return async dispatch => {
 
     // const fileName = image.fileName;
-    // const fileName = image.split('/').pop();
+    // // const fileName = image.split('/').pop();
 
-    // const newPath = RNFS.DocumentDirectoryPath + fileName;
+    // const newPath = `${Directory.folderImage}/${fileName}`;
 
     // try {
-    //   await RNFS.copyFile(image, newPath);
+    //   let res = await RNFetchBlob.fs.mv(image.path, newPath);
+    //   console.log("RES", res);
     // }
     // catch (err) {
     //   console.log(err);
     //   throw err;
     // }
-    dispatch({ type: ADD_IMAGE, imageData: { image: image.uri } });
+
+    dispatch({ type: ADD_IMAGE, imageData: { image: image } });
+  }
+}
+
+export const emptyImage = (img) => {
+
+  return async dispatch => {
+
+    let len = img.length;
+    for (let i = 0; i < len; i++) {
+      var path = img[i].path;
+      await RNFS.unlink(path);
+      console.log("FILE DELETED");
+    }
+
+    dispatch({ type: EMPTY_IMAGE });
   }
 }
