@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
-import * as RNFS from 'react-native-fs';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import Directory from './constants/Directory';
 import CameraNavigator from './navigation/CameraNavigator'
@@ -32,37 +32,78 @@ export default function App() {
   const [createdDoc, setCreatedDoc] = useState(false);
   const [createdImage, setCreatedImage] = useState(false);
 
-  makeDirectory = async () => {
+  const makeDirectoryDoc = async () => {
 
     // const newPath = RNFS.ExternalStorageDirectoryPath;
     const absoluteDocPath = `${Directory.folderDocument}`
+    try {
+      // let doc = await RNFS.mkdir(absoluteDocPath);
+      const isDir = await RNFetchBlob.fs.isDir(absoluteDocPath);
+      console.log("Directory Exists doc in App", isDir);
+      if (isDir) {
+        setCreatedImage(true);
+        return;
+      }
+      else {
+        const doc = await RNFetchBlob.fs.mkdir(absoluteDocPath);
+        console.log('result DOC', doc);
+        setCreatedDoc(true);
+        return;
+      }
+    } catch (err) {
+      console.log("ERR in APP doc", err);
+    }
+  }
+
+  const makeDirectoryImg = async () => {
+
+    // const newPath = RNFS.ExternalStorageDirectoryPath;
     const absoluteImagePath = `${Directory.folderImage}`
     try {
-      let doc = await RNFS.mkdir(absoluteDocPath);
-      console.log('result DOC', doc);
-      setCreatedDoc(true);
-
-      let img = await RNFS.mkdir(absoluteImagePath);
-      console.log('result IMG', img);
-      setCreatedImage(true);
+      // let img = await RNFS.mkdir(absoluteImagePath);
+      const isDir = await RNFetchBlob.fs.isDir(absoluteImagePath);
+      console.log("Directory Exists img in app", isDir);
+      if (isDir) {
+        setCreatedImage(true);
+        return;
+      }
+      else {
+        const img = await RNFetchBlob.fs.mkdir(absoluteImagePath);
+        console.log('result IMG', img);
+        setCreatedImage(true);
+        return;
+      }
     } catch (err) {
-      console.log("ERR", err);
+      console.log("ERR in APP img", err);
     }
   }
 
 
   useEffect(() => {
     const initialize = async () => {
-      await makeDirectory();
+      await makeDirectoryDoc();
+      makeDirectoryImg
     }
     initialize();
-  }, [createdDoc, createdImage])
+  }, [createdDoc])
 
+  useEffect(() => {
+    const initialize = async () => {
+      await makeDirectoryImg();
+    }
+    initialize();
+  }, [createdImage])
+
+  // if (createdDoc && createdImage) {
   return (
     <Provider store={store}>
       <CameraNavigator />
     </Provider>
   );
+  // }
+  // else{
+  //   return(<View><Text>LOADER</Text></View>)
+  // }
 }
 
 const styles = StyleSheet.create({

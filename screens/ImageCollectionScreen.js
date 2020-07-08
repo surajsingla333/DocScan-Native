@@ -1,125 +1,178 @@
-import React from 'react';
-import { View, ScrollView, Text, StyleSheet, FlatList, Image, Button } from 'react-native';
-
-import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
-
-import Directory from '../constants/Directory';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Text, StyleSheet, FlatList, Image, Button, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/stack';
 
 import { useSelector, useDispatch } from 'react-redux';
+import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFeather from 'react-native-vector-icons/Feather';
 
 import * as imagesActions from '../store/image/action';
 import Colors from '../constants/Colors';
 
-import ImagePage from '../components/ImagePage';
+import ImageCard from '../components/ImageCard';
+import AddImage from '../components/AddImage';
+import CreatePdf from '../components/CreatePdf';
 
 const ImageCollectionScreen = props => {
 
+  const [selectedImage, setSelectedImage] = useState([]);
+  const [settingsMenu, setSettingsMenu] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+
   const images = useSelector(state => state.images.images);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions(
+      !settingsMenu ?
+        {
+          headerLeft: () => (
+            <HeaderBackButton
+              // {...props}
+              tintColor={Colors.SET_COLOR_INVERSE}
+              onPress={() => {
+                console.log("PRESSED");
+                Alert.alert(
+                  "Are you sure?",
+                  "All the data will be discarded",
+                  [
+                    {
+                      text: "Discard",
+                      onPress: () => {
+                        console.log("Cancel Pressed");
+                        goBack();
+                      },
+                      style: "cancel"
+                    },
+                    { text: "Stay", onPress: () => console.log("OK Pressed") }
+                  ],
+                  { cancelable: false }
+                );
+              }}
+              color={'white'} />
+          ),
+          headerTitle: "Pages",
+          headerTintColor: Colors.SET_COLOR_INVERSE,
+          headerStyle: { backgroundColor: Colors.SET_COLOR },
+        } :
+        {
+
+          headerTitle: "Image Settings",
+          headerTintColor: Colors.SET_COLOR,
+          headerStyle: { backgroundColor: Colors.SET_COLOR_INVERSE },
+          headerLeft: () => (
+            <HeaderBackButton
+              // {...props}
+              tintColor={Colors.SET_COLOR}
+              onPress={() => {
+                setSelectedImages([]);
+                setSettingsMenu(false);
+              }}
+              color={Colors.SET_COLOR} />
+          ),
+          headerRight: () => (
+            selectedImages.length == 1 ?
+              <View style={{ flexDirection: "row" }}>
+                <IconFeather name="edit-2" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={() => onEditImageHandler(selectedImages[0])} />
+                <IconMaterial name="delete" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={deleteImages} />
+              </View> :
+              <View style={{ flexDirection: "row" }}>
+                <IconMaterial name="delete" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={deleteImages} />
+              </View>
+          )
+
+        }
+    );
+  }, [selectedImages, settingsMenu]);
 
   const dispatch = useDispatch();
 
-  console.log("IMAGE", images);
-  try {
-    console.log("IMAGE 0", images[0], "IMAGE 0 end");
-    console.log("IMAGE 0 uri", images[0].uri.uri);
+  useEffect(() => {
+    setSelectedImage(images);
+  }, [images])
+
+
+  const goBack = () => {
+    dispatch(imagesActions.emptyImage());
+    props.navigation.goBack();
   }
-  catch (err) {
-    console.log(err);
+
+  const deleteImages = () => {
+    console.log("IN DELETING IMAGES", selectedImages);
+    dispatch(imagesActions.filterImages(selectedImages));
+    setSelectedImages([]);
+    setSettingsMenu(false);
   }
 
-  const createPdf = async () => {
+  const imageTakenHandler = imagePath => {
+    setSelectedImage(img => img.concat({ id: img.length, uri: imagePath }));
+    dispatch(imagesActions.addImage(+selectedImage.length, imagePath));
+  }
 
-    let len = images.length;
+  const generatePdfHandler = () => {
+    dispatch(imagesActions.emptyImage());
+    props.navigation.navigate("Home");
+    console.log("Genrate PDF");
+  }
 
-    let currentName = new Date().toString();
+  const onEditImageHandler = (id) => {
+    console.log("CLICKED IMAGE EDIT", id, selectedImage[id], "EDIT IMAGE")
+  }
 
-    // const newPath = RNFS.ExternalStorageDirectoryPath;
-    const pdfPath = `${Directory.folderDocument}/${currentName}.pdf`;
+  const onImageSettingsHandler = (id) => {
+    console.log("HANDLING SETTINGS", id);
+    setSelectedImages(current => current.concat(id));
+    setSettingsMenu(true);
+  }
 
-    const jpgPath = images[0].uri.path;
-    const page = PDFPage.create().drawImage(jpgPath, 'jpg', {
-      x: 5,
-      y: 25,
-      width: images[0].uri.width / 10,
-      height: images[0].uri.height / 10,
-    });
-
-    let createdPDF = await PDFDocument.create(pdfPath).addPages(page).write();
-
-    console.log('PDF created at: ' + createdPDF);
-
-
-    //   console.log("INSIDE FUNCTION");
-    //   try {
-    //     // Create a new PDF in your app's private Documents directory
-    //     // setTimeout(async () => {
-    //     // const docsDir = PDFLib.getDocumentsDirectory();
-    //     // const pdfPath = `sample.pdf`;
-    //     PDFDocument.create(pdfPath).addPages(page).write().then(path => {
-    //   console.log('PDF created at: ' + path);
-    //   // Do stuff with your shiny new PDF!
-    //   });
-    //     // }, 100);
-    //   }
-    //   catch (err) {
-    // console.log("ERR", err, "ERR END");
-    // }
-
-    if (len == 1) {
-      dispatch(imagesActions.emptyImage(images));
-      props.navigation.navigate("Home");
-      return;
+  const onUnSelectHandler = (id) => {
+    let arr = selectedImages.filter(img => img != id);
+    setSelectedImages(arr);
+    if (!arr.length) {
+      setSettingsMenu(false);
     }
-
-    else {
-
-      for (let i = 1; i < len; i++) {
-
-        const jpgPath = images[i].uri.path;
-        const page = PDFPage.create().drawImage(jpgPath, 'jpg', {
-          x: 5,
-          y: 25,
-          width: images[i].uri.width / 10,
-          height: images[i].uri.height / 10,
-        });
-
-        console.log("INSIDE ADDING FUNCTIONS");
-        try {
-          // Create a new PDF in your app's private Documents directory
-          // setTimeout(async () => {
-          // const docsDir = PDFLib.getDocumentsDirectory();
-          // const pdfPath = `sample.pdf`;
-          PDFDocument.modify(pdfPath).addPages(page).write().then(path => {
-            console.log(`Page number ${i + 1} added in PDF at: ` + path);
-            // Do stuff with your shiny new PDF!
-          });
-          // }, 100);
-        }
-        catch (err) {
-          console.log("ERR", err, "ERR END");
-          return;
-        }
-      }
-      dispatch(imagesActions.emptyImage());
-      props.navigation.navigate("Home");
-      return;
-    }
-
   }
 
   const renderImage = itemData => {
-    return <ImagePage fileName={itemData.item} image={itemData.item.uri} onEditImage={() => { console.log("Clicked Image") }} />
+    return <ImageCard fileName={itemData.item} id={itemData.item.id} image={itemData.item.uri} settingMenu={settingsMenu} imageSettings={onImageSettingsHandler} onEditImage={onEditImageHandler} imageSelected={selectedImages.indexOf(itemData.item.id) >= 0} unSelect={onUnSelectHandler} />
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.pages}>
-        <FlatList data={images} keyExtractor={item => item.id} numColumns={2} renderItem={renderImage} />
-      </View>
-      <View style={styles.buttonView}>
-        <Button color={Colors.primary} title="Generate PDF" onPress={createPdf} />
-        <Button color={Colors.primary} title="Add Image" onPress={() => {props.navigation.pop()}} />
-      </View>
+    <View style={{ ...styles.screen, alignItems: !selectedImage.length ? 'center' : null, justifyContent: !selectedImage.length ? 'center' : null }}>
+      {!selectedImage.length ?
+        (
+          <View>
+          </View>
+        ) :
+        (
+          <View style={styles.pages}>
+            <FlatList data={selectedImage} keyExtractor={item => item.id} numColumns={2} renderItem={renderImage} />
+          </View>
+        )
+      }
+      {!settingsMenu ?
+        <View style={!selectedImage.length ? null : styles.buttonView}>
+          {!selectedImage.length ?
+            (
+              <View>
+              </View>
+            ) :
+            (
+              <View style={styles.button}>
+                <CreatePdf pages={selectedImage} onCreatePdf={generatePdfHandler} />
+              </View>
+            )
+          }
+
+          <View style={styles.button}>
+            <AddImage onImageTaken={imageTakenHandler} />
+          </View>
+
+        </View>
+        : <View></View>
+      }
     </View>
   )
 }
@@ -127,15 +180,18 @@ const ImageCollectionScreen = props => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    justifyContent: 'center'
   },
   pages: {
     flex: 1,
   },
   buttonView: {
     flexDirection: 'row',
-    margin: 20,
-    borderColor: Colors.accent,
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-between',
+  },
+  button: {
+    backgroundColor: Colors.accent,
+    borderRadius: 50
   }
 })
 

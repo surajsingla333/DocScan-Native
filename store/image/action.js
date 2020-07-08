@@ -1,6 +1,5 @@
 // import * as FileSystem from 'expo-file-system';
 import Directory from '../../constants/Directory';
-import * as RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob'
 
 // // create a path you want to write to
@@ -19,8 +18,9 @@ import RNFetchBlob from 'rn-fetch-blob'
 
 export const ADD_IMAGE = "ADD_IMAGE";
 export const EMPTY_IMAGE = "EMPTY_IMAGE";
+export const FILTER_IMAGE = "FILTER_IMAGE"
 
-export const addImage = (image) => {
+export const addImage = (id, image) => {
 
   return async dispatch => {
 
@@ -38,21 +38,42 @@ export const addImage = (image) => {
     //   throw err;
     // }
 
-    dispatch({ type: ADD_IMAGE, imageData: { image: image } });
+    dispatch({ type: ADD_IMAGE, imageData: { id: id, image: image } });
   }
 }
 
-export const emptyImage = (img) => {
+export const emptyImage = () => {
 
   return async dispatch => {
 
-    let len = img.length;
-    for (let i = 0; i < len; i++) {
-      var path = img[i].path;
-      await RNFS.unlink(path);
-      console.log("FILE DELETED");
-    }
+    // let len = img.length;
+    // try {
+    //   for (let i = 0; i < len; i++) {
+    //     const del = await RNFetchBlob.fs.unlink(`${Directory.folderImage}/${img[i].fileName}`);
+    //     console.log("IMAGE DELETED", del);
+    //   }
+    // } catch(err){
+    //   console.log("Err", err);
+    // }
 
-    dispatch({ type: EMPTY_IMAGE });
+    dispatch({ type: EMPTY_IMAGE});
+  }
+}
+
+export const filterImages = (img) => {
+
+  return async dispatch => {
+
+    // let len = img.length;
+    // try {
+    //   for (let i = 0; i < len; i++) {
+    //     const del = await RNFetchBlob.fs.unlink(`${Directory.folderImage}/${img[i].fileName}`);
+    //     console.log("IMAGE DELETED", del);
+    //   }
+    // } catch(err){
+    //   console.log("Err", err);
+    // }
+
+    dispatch({ type: FILTER_IMAGE, images: {image: img}});
   }
 }

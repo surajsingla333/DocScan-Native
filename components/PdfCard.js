@@ -3,23 +3,22 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import Colors from '../constants/Colors';
 
 const PdfCard = props => {
+
   return (
 
     <View style={styles.file}>
-      <TouchableOpacity onPress={props.onOpenFile}>
+      <TouchableOpacity onPress={props.settingMenu ? () => {
+        props.fileSelected ? props.unSelect(props.fileName) :
+          props.fileSettings(props.fileName)
+      } : () => { props.onOpenFile(props.fileName) }} onLongPress={props.settingMenu ? null : () => props.fileSettings(props.fileName)}>
         <View style={styles.content}>
           <View style={styles.description}>
-            {/* <ImageBackground source={{ uri: props.image }} style={styles.bgImage}> */}
-            {/* <View style={styles.titleContainer}> */}
             <Text style={styles.descriptionText}>
-              {/* style={styles.title} numberOfLines={1}>{props.title} */}
               PDF FILE
             </Text>
-            {/* </View> */}
-            {/* </ImageBackground> */}
           </View>
-          <View style={styles.footer}>
-            <Text style={styles.footerText} numberOfLines={1} >{props.fileName}</Text>
+          <View style={props.fileSelected ? { ...styles.footer, backgroundColor: Colors.accent } : { ...styles.footer, backgroundColor: Colors.primary }}>
+            <Text style={props.fileSelected ? { ...styles.footerText, color: Colors.primary } : { ...styles.footerText, color: Colors.accent }} numberOfLines={1} >{props.fileName}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -29,8 +28,8 @@ const PdfCard = props => {
 
 const styles = StyleSheet.create({
   file: {
-    flex: 1,
-    margin: 10,
+    flex: 0.5,
+    // padding: 10,
   },
   content: {
     height: Dimensions.get('window').height / 5,
@@ -39,7 +38,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.primary,
     borderWidth: 2,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    margin: 10
   },
   description: {
     flex: 1,
@@ -50,62 +50,15 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   footer: {
-    backgroundColor: Colors.primary,
+    // backgroundColor: Colors.primary,
     justifyContent: 'center',
     height: '30%',
     padding: 10,
   },
   footerText: {
-    color: Colors.accent,
+    // color: Colors.accent,
     textAlign: 'center'
   }
 });
 
 export default PdfCard;
-
-// import React from 'react';
-// import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
-
-// const MealItem = props => {
-//   return (
-
-//   )
-// }
-
-// const styles = StyleSheet.create({
-//   mealRow: {
-//     flexDirection: 'row',
-//   },
-//   mealItem: {
-//     height: 200,
-//     width: '100%',
-//     backgroundColor: '#f5f5f5',
-//     borderRadius: 10,
-//     overflow: 'hidden'
-//     // margin: 10,
-//   },
-//   mealHeader: {
-//     height: '85%'
-//   },
-//   mealDetail: {
-//     paddingHorizontal: 10,
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     height: '15%'
-//   },
-//   bgImage: {
-//     width: '100%',
-//     height: '100%',
-//     justifyContent: 'flex-end'
-//   },
-//   titleContainer: {
-//     backgroundColor: 'rgba(0,0,0,0.5)',
-//     paddingVertical: 5,
-//     paddingHorizontal: 12,
-//   },
-//   title: {
-//     fontSize: 20,
-//     color: 'white',
-//     textAlign: 'center'
-//   }
-// });

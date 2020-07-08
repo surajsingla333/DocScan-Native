@@ -1,4 +1,4 @@
-import { GET_DOCUMENT } from './action';
+import { GET_DOCUMENT, DELETE_DOCUMENT } from './action';
 // import Image from '../../models/image';
 
 const initialState = {
@@ -10,6 +10,10 @@ export default (state = initialState, action) => {
     case GET_DOCUMENT:
       return {
         documents: action.documents.allDocuments,
+      }
+    case DELETE_DOCUMENT:
+      return{
+        documents: action.documents.deleteDocument,
       }
     default:
       return state;

@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Button, StyleSheet, Image } from 'react-native'
 
 import { useDispatch } from 'react-redux';
 
-import ImageSelector from '../components/ImageSelector';
+import AddImage from '../components/AddImage';
 
 import * as imagesActions from '../store/image/action';
 import Colors from '../constants/Colors';

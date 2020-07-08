@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.wix.RNCameraKit.RNCameraKitPackage;
 import com.vinzscam.reactnativefileviewer.RNFileViewerPackage;

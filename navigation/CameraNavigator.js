@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack';
-import { Platform } from 'react-native'
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
+
+import { Platform, Alert } from 'react-native'
 
 import Colors from '../constants/Colors';
 
@@ -20,9 +21,9 @@ const Stack = createStackNavigator();
 // }, {
 //   defaulNavigationOptions: {
 //     headerStyle: {
-//       backgroundColor: Platform.OS === 'android' ? Colors.primary : Colors.accent,
+//       backgroundColor: Colors.SET_COLOR,
 //     },
-//     headerTintColor: Platform.OS === 'android' ? Colors.accent : Colors.primary
+//     headerTintColor: Colors.SET_COLOR_INVERSE
 //   }
 // });
 
@@ -33,16 +34,19 @@ const CameraNavigator = () => {
         initialRouteName="Home"
         headerMode="screen"
         screenOptions={{
-          headerTintColor: Platform.OS === 'android' ? Colors.accent : Colors.primary,
-          headerStyle: { backgroundColor: Platform.OS === 'android' ? Colors.primary : Colors.accent },
+          headerTintColor: Colors.SET_COLOR_INVERSE,
+          headerStyle: { backgroundColor: Colors.SET_COLOR },
         }}>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: 'Welcome' }}
+          options={{ title: 'Welcome', headerTitleAlign: 'center' }}
         />
         <Stack.Screen name="Camera" component={CameraScreen} />
-        <Stack.Screen name="Pages" component={ImageCollectionScreen} />
+        <Stack.Screen
+          name="Pages"
+          component={ImageCollectionScreen}
+        />
 
       </Stack.Navigator>
     </NavigationContainer>)
