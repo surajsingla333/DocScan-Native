@@ -50,17 +50,36 @@ const CreatePdf = props => {
       if (dir) {
         const pdfPath = `${Directory.folderDocument}/${currentName}.pdf`;
 
-        const jpgPath = pages[0].uri.path;
-        const imageRatio = pages[0].uri.width / pages[0].uri.height;
+        const jpgPath = pages[0].uri.path.split('/').slice(3).join('/');
         const imageW = pages[0].uri.width;
         const imageH = pages[0].uri.height;
+        const imageRatio = imageW / imageH;
+
+        let WIDTH;
+        let HEIGHT;
+
+        if (imageH > imageW) {
+          if (imageRatio > PageSize.ratio) {
+            WIDTH = PageSize.width;
+            HEIGHT = PageSize.width / imageRatio;
+          }
+          else {
+            HEIGHT = PageSize.height;
+            WIDTH = imageRatio * PageSize.height;
+          }
+        }
+        else {
+          WIDTH = PageSize.width;
+          HEIGHT = PageSize.width / imageRatio;
+        }
+
         console.log(" IMAGE WIDTH ", imageW, " IMAGE Height ", imageH, " IMAGE RATIO ", imageRatio, " Page Height ", PageSize.height, " Page width ", PageSize.width, " Page Ratio ", pageRatio)
 
         const page = PDFPage.create().setMediaBox(PageSize.width / 2, PageSize.height / 2).drawImage(jpgPath, 'jpg', {
-          x: imageW > imageH ? 0 : ((PageSize.width - ((PageSize.width / imageRatio) / 2)) / 2),
-          y: imageW > imageH ? ((PageSize.height - ((PageSize.height * imageRatio) / 2))) : 0,
-          width: imageW > imageH ? (PageSize.width / 2) : ((PageSize.height * imageRatio) / 2),
-          height: imageW > imageH ? ((PageSize.width / imageRatio) / 2) : (PageSize.height / 2),
+          x: 0,
+          y: 0,
+          width: WIDTH/2,
+          height: HEIGHT/2,
         });
 
         let createdPDF = await PDFDocument.create(pdfPath).addPages(page).write();
@@ -76,15 +95,35 @@ const CreatePdf = props => {
 
           for (let i = 1; i < len; i++) {
 
-            const jpgPath = pages[i].uri.path;
-            const imageRatio = pages[i].uri.width / pages[i].uri.height;
+            const jpgPath = pages[i].uri.path.split('/').slice(3).join('/');
             const imageW = pages[i].uri.width;
             const imageH = pages[i].uri.height;
+            const imageRatio = imageW / imageH;
+
+            let WIDTH;
+            let HEIGHT;
+
+            if (imageH > imageW) {
+              if (imageRatio > PageSize.ratio) {
+                WIDTH = PageSize.width;
+                HEIGHT = PageSize.width / imageRatio;
+              }
+              else {
+                HEIGHT = PageSize.height;
+                WIDTH = imageRatio * PageSize.height;
+              }
+            }
+            else {
+              WIDTH = PageSize.width;
+              HEIGHT = PageSize.width / imageRatio;
+            }
+
+
             const page = PDFPage.create().setMediaBox(PageSize.width / 2, PageSize.height / 2).drawImage(jpgPath, 'jpg', {
-              x: imageW > imageH ? 0 : ((PageSize.width - ((PageSize.width / imageRatio) / 2)) / 2),
-              y: imageW > imageH ? ((PageSize.height - ((PageSize.height * imageRatio) / 2))) : 0,
-              width: imageW > imageH ? (PageSize.width / 2) : ((PageSize.height * imageRatio) / 2),
-              height: imageW > imageH ? ((PageSize.width / imageRatio) / 2) : (PageSize.height / 2),
+              x: 0,
+              y: 0,
+              width: WIDTH/2,
+              height: HEIGHT/2,
             });
 
             console.log("INSIDE ADDING FUNCTIONS");

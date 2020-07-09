@@ -6,6 +6,11 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import { useSelector, useDispatch } from 'react-redux';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconFeather from 'react-native-vector-icons/Feather';
+import ImagePicker from 'react-native-image-crop-picker';
+
+import { RNPhotoEditor } from 'react-native-photo-editor'
+import * as RNFS from 'react-native-fs';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import * as imagesActions from '../store/image/action';
 import Colors from '../constants/Colors';
@@ -117,8 +122,55 @@ const ImageCollectionScreen = props => {
     console.log("Genrate PDF");
   }
 
-  const onEditImageHandler = (id) => {
-    console.log("CLICKED IMAGE EDIT", id, selectedImage[id], "EDIT IMAGE")
+  const onEditImageHandler = async (id) => {
+    console.log("CLICKED IMAGE EDIT", id, selectedImage[id], "EDIT IMAGE");
+
+    const PATH = selectedImage[id].uri.path.split('/').slice(3).join('/');
+
+    console.log("PATH", PATH);
+
+    // ImagePicker.openCropper({
+    //   path: PATH,
+    //   width: 300,
+    //   height: 400,
+    //   freeStyleCropEnabled: true,
+    // }).then(image => {
+    //   console.log(image);
+    // }).catch(err => {
+    //   console.log("ERROR", err);
+    // });
+
+    // const dest = `${RNFS.DocumentDirectoryPath}/${selectedImage[id].uri.fileName}`
+
+    // console.log("IMAGEPATH", selectedImage[id].uri.path);
+    // console.log("IMAGEPATH uri", selectedImage[id].uri.path);
+    // console.log("IMAGEname ", selectedImage[id].uri.fileName);
+    // console.log("IMAGEname uri", selectedImage[id].uri.fileName);
+    // try {
+
+    //   const isDir = await RNFetchBlob.fs.mv(selectedImage[id].uri.path, dest);
+
+    // } catch (err) {
+    //   console.log("Err in HOME", err);
+    // }
+
+    // console.log("PATH", RNFS.DocumentDirectoryPath);
+    
+    RNPhotoEditor.Edit({
+      path: PATH,
+      onDone: (edit) => {
+        console.log("ON DONE", edit);
+        setSelectedImages([]);
+        setSettingsMenu(false);
+      },
+      onCancel: (edit) => {
+        console.log("CANCEL EDIT", edit);
+        setSelectedImages([]);
+        setSettingsMenu(false);
+      },
+      hiddenControls: [],
+    });
+
   }
 
   const onImageSettingsHandler = (id) => {

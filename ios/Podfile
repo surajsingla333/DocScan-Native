@@ -102,6 +102,8 @@ target 'DocScan' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'RNImageCropPicker', :path => '../node_modules/react-native-image-crop-picker'
+
   post_install do |installer|
     flipper_post_install(installer)
   end

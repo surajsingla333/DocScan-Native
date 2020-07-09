@@ -13,7 +13,7 @@ const ImageCard = props => {
         onLongPress={props.settingMenu ? null : () => props.imageSettings(props.id)}>
         <View style={styles.content}>
           <View style={styles.imageView}>
-            <Image style={styles.image} source={{ uri: props.image.uri }} />
+            <Image style={styles.image} source={{ uri: props.image.path }} />
           </View>
           <View style={props.imageSelected ? { ...styles.pageNumber, backgroundColor: Colors.primary } : { ...styles.pageNumber, backgroundColor: Colors.accent }}>
             <Text style={props.imageSelected ? { ...styles.page, color: Colors.accent } : { ...styles.page, color: Colors.primary }}>{props.id + 1}</Text>

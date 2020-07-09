@@ -138,9 +138,10 @@ android {
         applicationId "com.docscan"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "1.0"
-         missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {
