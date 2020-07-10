@@ -7,6 +7,7 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import * as RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
 import FileViewer from 'react-native-file-viewer';
+import * as Sharing from 'expo-sharing';
 
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -26,7 +27,7 @@ const HomeScreen = props => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [newName, setNewName] = useState('');
-  // const [oldName, setOldName] = useState('');
+  const [shareModal, setShareModal] = useState(false);
 
   const images = useSelector(state => state.documents.documents);
 
@@ -88,11 +89,11 @@ const HomeScreen = props => {
             <View style={{ flexDirection: "row" }}>
               <IconFeather name="edit-2" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={() => { editFileName() }} />
               {/* <IconFeather name="book-open" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={() => openFile(selectedFiles[0])} /> */}
-              <IconEntypo name="share" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} />
+              <IconEntypo name="share" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={() => { shareFiles() }} />
               <IconMaterial name="delete" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={deleteFiles} />
             </View> :
             <View style={{ flexDirection: "row" }}>
-              <IconEntypo name="share" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} />
+              <IconEntypo name="share" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={() => { shareFiles() }} />
               <IconMaterial name="delete" size={25} color={Colors.SET_COLOR} style={{ marginRight: 25 }} onPress={deleteFiles} />
             </View>
         )
@@ -112,28 +113,52 @@ const HomeScreen = props => {
     setModalVisible(true);
 
     console.log("EDIT FILE");
+  }
 
-    // return (
+  const shareFiles = async () => {
+    console.log("SHARE");
 
-    // );
+    setShareModal(true);
+    // try {
+    //   const available = await Sharing.isAvailableAsync();
 
+    //   console.log("MAIN BUNDLE", `${RNFS.CachesDirectoryPath}`);
+      
+    //   const local = `${RNFS.CachesDirectoryPath}/${selectedFiles[0]}`
+    //   // const local = `${RNFS.DocumentDirectoryPath}/${selectedFiles[0]}`
+    //   const copyFiles = await RNFetchBlob.fs.cp(`${Directory.folderDocument}/${selectedFiles[0]}`, local);
 
-    // Alert.alert(
-    //   "Rename the File...",
-    //   "Type new file name.",
-    //   [
-    //     {
-    //       text: "Discard",
-    //       onPress: () => {
-    //         console.log("Cancel Pressed");
-    //         goBack();
-    //       },
-    //       style: "cancel"
-    //     },
-    //     { text: "Stay", onPress: () => console.log("OK Pressed") }
-    //   ],
-    //   { cancelable: false }
-    // );
+    //   console.log("COPY FILES", copyFiles, local);
+
+    //   console.log("AVAILABLE", available, selectedFiles);
+    //   if (available) {
+    //     const share = await Sharing.shareAsync(`{
+    //       name: 'test1',
+    //       filename: 'test1.pdf',
+    //       path: local,
+    //     }`);
+    //     console.log("SHARE", share);
+    //   }
+    //   else {
+    //     Alert.alert(
+    //       "Can't share!!!",
+    //       "Try again later",
+    //       [
+    //         {
+    //           text: "Okay",
+    //           onPress: () => {
+    //             console.log("Cancel Pressed");
+    //           },
+    //           style: "cancel"
+    //         }
+    //       ],
+    //       { cancelable: false }
+    //     );
+    //     return;
+    //   }
+    // } catch (err) {
+    //   console.log("ERROR IN share", err);
+    // }
   }
 
   const deleteFiles = async () => {
@@ -259,6 +284,33 @@ const HomeScreen = props => {
           </TouchableOpacity>
         </Modal>
       </View>
+
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={shareModal}
+        // onRequestClose={() => {
+        //   Alert.alert("Modal has been closed.");
+        //   console.log("CLICK");
+        // }}
+        >
+          <TouchableOpacity style={styles.modalView} onPress={() => { console.log("TOUCHED"); setShareModal(false) }}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent} >
+                <Text style={styles.modalHeader}>Share not available!!!</Text>
+                <TouchableOpacity style={{...styles.modalButton, width: '50%', margin: 20}}
+                  onPress={() => {setShareModal(false)}}>
+                  <Text style={styles.buttonText}>
+                    OK
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
+        </Modal>
+      </View>
+
     </View>
   )
 }

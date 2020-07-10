@@ -75,11 +75,11 @@ const CreatePdf = props => {
 
         console.log(" IMAGE WIDTH ", imageW, " IMAGE Height ", imageH, " IMAGE RATIO ", imageRatio, " Page Height ", PageSize.height, " Page width ", PageSize.width, " Page Ratio ", pageRatio)
 
-        const page = PDFPage.create().setMediaBox(PageSize.width / 2, PageSize.height / 2).drawImage(jpgPath, 'jpg', {
-          x: 0,
-          y: 0,
-          width: WIDTH/2,
-          height: HEIGHT/2,
+        const page = PDFPage.create().setMediaBox(PageSize.width, PageSize.height).drawImage(jpgPath, 'jpg', {
+          x: (PageSize.width - WIDTH) / 2,
+          y: (PageSize.height - HEIGHT) / 2,
+          width: WIDTH,
+          height: HEIGHT,
         });
 
         let createdPDF = await PDFDocument.create(pdfPath).addPages(page).write();
@@ -119,11 +119,11 @@ const CreatePdf = props => {
             }
 
 
-            const page = PDFPage.create().setMediaBox(PageSize.width / 2, PageSize.height / 2).drawImage(jpgPath, 'jpg', {
-              x: 0,
-              y: 0,
-              width: WIDTH/2,
-              height: HEIGHT/2,
+            const page = PDFPage.create().setMediaBox(PageSize.width, PageSize.height).drawImage(jpgPath, 'jpg', {
+              x: (PageSize.width - WIDTH) / 2,
+              y: (PageSize.height - HEIGHT) / 2,
+              width: WIDTH,
+              height: HEIGHT,
             });
 
             console.log("INSIDE ADDING FUNCTIONS");
