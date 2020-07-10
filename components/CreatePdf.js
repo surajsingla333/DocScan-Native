@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Button, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, Alert, Dimensions, TouchableOpacity } from 'react-native';
 import Directory from '../constants/Directory';
 
 import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
@@ -155,12 +155,12 @@ const CreatePdf = props => {
 
 
   return (
-    <View style={styles.imagePicker}>
+    <TouchableOpacity style={styles.imagePicker} onPress={generatePdf}>
       <View style={styles.buttonView}>
         {/* <Icon name="pdffile1" size={50} color={Colors.accent} onPress={newPdf} /> */}
-        <Icon name="pdffile1" size={50} color={Colors.accent} onPress={generatePdf} />
+        <Icon name="pdffile1" size={50} color={Colors.accent} />
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 

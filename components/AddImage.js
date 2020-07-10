@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Button, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, Alert, Dimensions, TouchableOpacity } from 'react-native';
 // import ImagePicker from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -81,11 +81,11 @@ const AddImage = props => {
 
 
   return (
-    <View style={styles.imagePicker}>
+    <TouchableOpacity style={styles.imagePicker} onPress={takeImageHandler}>
       <View style={styles.buttonView}>
-        <Icon name="ios-camera" size={50} color={Colors.accent} onPress={takeImageHandler} />
+        <Icon name="ios-camera" size={50} color={Colors.accent} />
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
