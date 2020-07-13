@@ -24,7 +24,6 @@
     "react-dom": "~16.11.0",
     "react-native": "~0.62.2",
     "react-native-camera": "^3.31.0",
-    "react-native-camera-kit": "^8.0.4",
     "react-native-file-viewer": "^2.1.1",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
