@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, StyleSheet, FlatList, Image, Button, Alert } from 'react-native';
+import { View, ScrollView, Text, StyleSheet, FlatList, Image, Button, Alert, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
 
@@ -37,25 +37,7 @@ const ImageCollectionScreen = props => {
             <HeaderBackButton
               // {...props}
               tintColor={Colors.SET_COLOR_INVERSE}
-              onPress={() => {
-                console.log("PRESSED");
-                Alert.alert(
-                  "Are you sure?",
-                  "All the data will be discarded",
-                  [
-                    {
-                      text: "Discard",
-                      onPress: () => {
-                        console.log("Cancel Pressed");
-                        goBack();
-                      },
-                      style: "cancel"
-                    },
-                    { text: "Stay", onPress: () => console.log("OK Pressed") }
-                  ],
-                  { cancelable: false }
-                );
-              }}
+              onPress={handleBackPress}
               color={'white'} />
           ),
           headerTitle: "Pages",
@@ -98,6 +80,36 @@ const ImageCollectionScreen = props => {
     setSelectedImage(images);
   }, [images])
 
+  useEffect(() => {
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+
+  const handleBackPress = () => {
+    console.log("PRESSED");
+    Alert.alert(
+      "Are you sure?",
+      "All the data will be discarded",
+      [
+        {
+          text: "Discard",
+          onPress: () => {
+            console.log("Cancel Pressed");
+            goBack();
+          },
+          style: "cancel"
+        },
+        { text: "Stay", onPress: () => console.log("OK Pressed") }
+      ]
+    );
+    return true;
+  };
 
   const goBack = () => {
     dispatch(imagesActions.emptyImage());
@@ -155,7 +167,7 @@ const ImageCollectionScreen = props => {
     // }
 
     // console.log("PATH", RNFS.DocumentDirectoryPath);
-    
+
     RNPhotoEditor.Edit({
       path: PATH,
       onDone: (edit) => {

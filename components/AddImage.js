@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Button, StyleSheet, Alert, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, Alert, Dimensions, TouchableOpacity, Platform } from 'react-native';
 // import ImagePicker from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
 // import * as ImagePicker from 'expo-image-picker';
 // import * as Permissions from 'expo-permissions';
 
@@ -10,24 +12,25 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { RNCamera } from 'react-native-camera';
 import Colors from '../constants/Colors';
 
+
 const AddImage = props => {
 
   console.log("IN IMAGE SELECTOR");
 
   const [pickedImage, setPickedImage] = useState();
 
-  const verifyPermissions = async () => {
-    const result = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
-    if (result.status !== 'granted') {
-      Alert.alert(
-        'Insufficient permissions!',
-        'You need to grant camera permissions to use this app.',
-        [{ text: 'Okay' }]
-      );
-      return false;
-    }
-    return true;
-  };
+  // const verifyPermissions = async () => {
+  //   const result = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+  //   if (result.status !== 'granted') {
+  //     Alert.alert(
+  //       'Insufficient permissions!',
+  //       'You need to grant camera permissions to use this app.',
+  //       [{ text: 'Okay' }]
+  //     );
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   // const takeImageHandler = async () => {
   // const hasPermission = await verifyPermissions();
@@ -44,19 +47,76 @@ const AddImage = props => {
 
   // };
 
+  const verifyPermissions = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const permissions = await check(PERMISSIONS.ANDROID.CAMERA);
+        switch (permissions) {
+          case RESULTS.UNAVAILABLE:
+            return { response: false, data: "Feature not available" };
+            break;
+          case RESULTS.DENIED:
+            return { response: false, data: "Permission denied, allow to continue." };
+            break;
+          case RESULTS.GRANTED:
+            return { response: true, data: "Accessing camera" };
+            break;
+          case RESULTS.BLOCKED:
+            return { response: false, data: "Permission blocked! Goto app settings to unblock." };
+            break;
+        }
+      }
+
+      catch (err) {
+        console.log("Error in permissions", err);
+        return { response: false, data: "Error in permissions" }
+      }
+    }
+    else {
+      try {
+        const permissions = await check(PERMISSIONS.IOS.CAMERA);
+        switch (permissions) {
+          case RESULTS.UNAVAILABLE:
+            return { response: false, data: "Feature not available" };
+            break;
+          case RESULTS.DENIED:
+            return { response: false, data: "Permission denied, allow to continue." };
+            break;
+          case RESULTS.GRANTED:
+            return { response: true, data: "Accessing camera" };
+            break;
+          case RESULTS.BLOCKED:
+            return { response: false, data: "Permission blocked! Goto app settings to unblock." };
+            break;
+        }
+      }
+      catch (err) {
+        console.log("Error in permissions", err);
+        return { response: false, data: "Error in permissions" }
+      }
+    }
+  }
+
   const takeImageHandler = async () => {
-    ImagePicker.openCamera({
-      // width: 300,
-      // height: 400,
-      freeStyleCropEnabled: true,
-      cropping: true,
-    }).then(image => {
-      console.log("UPADTED IMG", image);
-      setPickedImage(image);
-      props.onImageTaken(image);
-    }).catch(err => {
-      console.log("ERR", err);
-    });
+    const permission = await verifyPermissions();
+    if (permission.response) {
+      console.log("PERMISSION DATA", permission.data);
+      ImagePicker.openCamera({
+        // width: 300,
+        // height: 400,
+        freeStyleCropEnabled: true,
+        cropping: true,
+      }).then(image => {
+        console.log("UPADTED IMG", image);
+        setPickedImage(image);
+        props.onImageTaken(image);
+      }).catch(err => {
+        console.log("ERR", err);
+      });
+    }
+    else {
+      console.log("PERMISSINO ERROR", permission.data);
+    }
     // ImagePicker.showImagePicker((response) => {
     //   // console.log('Response = ', response.uri);
 
