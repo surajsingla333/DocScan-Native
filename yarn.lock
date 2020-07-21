@@ -4964,10 +4964,10 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
 
-lodash@^4.14.2, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0:
+  version "4.17.19"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
+  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
 log-symbols@^2.2.0:
   version "2.2.0"
@@ -6107,13 +6107,6 @@ react-native-appearance@~0.3.3:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
-react-native-camera-kit@^8.0.4:
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-8.0.4.tgz#8e350b37a205054ceb140a8babe1d032acdcdbd5"
-  integrity sha512-nzjZVufIF9gnSklufJhpALJP1Ghaj3/fDMYcm4Bvzbq6PAA0CqogX448C7TRWYOqGsE/jFcKagM/J7/M4AJzhw==
-  dependencies:
-    lodash "^4.14.2"
-
 react-native-camera@^3.31.0:
   version "3.31.0"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-3.31.0.tgz#7b9b4dd30b6d1363bdffed4ce0a0bef93c3ebf87"
@@ -6165,6 +6158,11 @@ react-native-pdf-lib@^1.0.0:
   integrity sha512-XJ8d9gWbpVYLeS9kC/h/MY+lLKVWZfPiGJBrE9lz4pnVWiFwbH76LA3lGVurKlPxgcm/FZNzaXSKAcSYeDs+BA==
   dependencies:
     babel-preset-flow "^6.23.0"
+
+react-native-permissions@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-2.1.5.tgz#6cfc4f1ab1590f4952299b7cdc9698525ad540e0"
+  integrity sha512-b9KO/4UEV9qddl+kcSybmdk8nlAifclSDBR2rSvc5KZM06vIaJWJNIzK2ZwPXqDQ5yD3CJLuKTRj7Fz+jM9qyQ==
 
 react-native-photo-editor@^1.0.6:
   version "1.0.6"
